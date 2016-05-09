@@ -1,4 +1,4 @@
-package io.haydar.sg;
+package io.haydar.sg.list;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +8,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
+
+import io.haydar.sg.R;
+import io.haydar.sg.bean.CGImage;
+import io.haydar.sg.util.CustomImageView;
+import io.haydar.sg.util.ImageUtil;
 
 /**
  * Created by gjy on 16/4/27.

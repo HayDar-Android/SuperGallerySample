@@ -1,4 +1,4 @@
-package io.haydar.sg;
+package io.haydar.sg.list;
 
 import android.content.Context;
 import android.media.MediaScannerConnection;

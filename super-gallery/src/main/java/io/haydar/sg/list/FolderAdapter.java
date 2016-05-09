@@ -1,4 +1,4 @@
-package io.haydar.sg;
+package io.haydar.sg.list;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import io.haydar.sg.R;
+import io.haydar.sg.bean.SGFolder;
 
 /**
  * Created by gjy on 16/5/9.

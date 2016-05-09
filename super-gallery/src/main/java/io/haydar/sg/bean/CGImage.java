@@ -1,4 +1,4 @@
-package io.haydar.sg;
+package io.haydar.sg.bean;
 
 import java.io.Serializable;
 

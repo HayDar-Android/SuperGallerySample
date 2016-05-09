@@ -1,4 +1,4 @@
-package io.haydar.sg;
+package io.haydar.sg.list;
 
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;

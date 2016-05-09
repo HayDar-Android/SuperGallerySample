@@ -1,4 +1,4 @@
-package io.haydar.sg;
+package io.haydar.sg.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -21,6 +21,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import io.haydar.sg.R;
+import io.haydar.sg.bean.CGImage;
+import io.haydar.sg.bean.Result;
 
 /**
  * Created by gjy on 16/4/28.

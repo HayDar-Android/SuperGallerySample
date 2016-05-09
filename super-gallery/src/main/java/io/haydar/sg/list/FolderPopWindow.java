@@ -1,4 +1,4 @@
-package io.haydar.sg;
+package io.haydar.sg.list;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
@@ -10,6 +10,9 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import java.util.ArrayList;
+
+import io.haydar.sg.R;
+import io.haydar.sg.bean.SGFolder;
 
 /**
  * Created by gjy on 16/5/9.

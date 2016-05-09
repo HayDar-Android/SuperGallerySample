@@ -1,4 +1,4 @@
-package io.haydar.sg;
+package io.haydar.sg.list;
 
 import android.database.Cursor;
 import android.net.Uri;
@@ -19,6 +19,11 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.haydar.sg.R;
+import io.haydar.sg.SuperGalleryActivity;
+import io.haydar.sg.bean.CGImage;
+import io.haydar.sg.bean.SGFolder;
 
 /**
  * Created by gjy on 16/4/27.

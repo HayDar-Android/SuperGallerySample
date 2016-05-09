@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.haydar.sg;
+package io.haydar.sg.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;

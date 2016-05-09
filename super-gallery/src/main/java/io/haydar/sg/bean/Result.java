@@ -1,6 +1,9 @@
-package io.haydar.sg;
+package io.haydar.sg.bean;
 
 import android.graphics.Bitmap;
+
+import io.haydar.sg.util.CustomImageView;
+
 
 /**
  * Created by gjy on 16/5/5.

@@ -1,4 +1,4 @@
-package io.haydar.sg;
+package io.haydar.sg.util;
 
 import android.content.Context;
 import android.util.AttributeSet;

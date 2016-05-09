@@ -6,6 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.orhanobut.logger.Logger;
 
+import io.haydar.sg.bean.CGImage;
+import io.haydar.sg.clip.ClipBitmapFragment;
+import io.haydar.sg.list.BitmapListFragment;
+
 /**
  * Created by gjy on 16/5/6.
  */

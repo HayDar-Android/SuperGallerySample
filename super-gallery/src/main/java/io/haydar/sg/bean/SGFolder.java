@@ -1,4 +1,4 @@
-package io.haydar.sg;
+package io.haydar.sg.bean;
 
 /**
  * Created by gjy on 16/5/9.

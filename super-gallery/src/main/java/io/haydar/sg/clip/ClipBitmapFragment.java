@@ -1,4 +1,4 @@
-package io.haydar.sg;
+package io.haydar.sg.clip;
 
 
 import android.os.Bundle;
@@ -7,6 +7,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import io.haydar.sg.R;
+import io.haydar.sg.bean.CGImage;
 
 /**
  * Created by gjy on 16/5/6.
