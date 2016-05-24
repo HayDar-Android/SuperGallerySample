@@ -1,5 +1,6 @@
 package io.haydar.sg.list;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -7,13 +8,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
+import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.io.File;
@@ -21,39 +21,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.haydar.sg.R;
-import io.haydar.sg.SuperGalleryActivity;
 import io.haydar.sg.bean.CGImage;
 import io.haydar.sg.bean.SGFolder;
+import io.haydar.sg.clip.ClipBitmapActivity;
 
 /**
  * Created by gjy on 16/4/27.
  */
-public class BitmapListFragment extends Fragment implements FolderPopWindow.OnItemClickListener, CustomGalleryAdapter.OnRecyclerItemClickListener {
+public class BitmapListActivity extends AppCompatActivity implements FolderPopWindow.OnItemClickListener, CustomGalleryAdapter.OnRecyclerItemClickListener {
 
     RecyclerView mRecyclerView;
     private TextView titleTV;
     private CustomGalleryAdapter mAdapter;
     private ArrayList<CGImage> mStringList;
-    private boolean isScroll = false;
-    private View view;
     private SingleMediaScanner sms;
     private List<SGFolder> mFolderList;
     private FolderPopWindow mFolderPopWindow;
-    private SuperGalleryActivity mSuperGalleryActivity;
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_bitmap_list, container, false);
-        mSuperGalleryActivity = (SuperGalleryActivity) getActivity();
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
+        setContentView(R.layout.fragment_bitmap_list);
         initView();
-        return view;
     }
 
     private void initView() {
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.listview);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        titleTV = (TextView) view.findViewById(R.id.title);
+        mRecyclerView = (RecyclerView) findViewById(R.id.listview);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+
+        titleTV = (TextView) findViewById(R.id.title);
         titleTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,11 +58,12 @@ public class BitmapListFragment extends Fragment implements FolderPopWindow.OnIt
             }
         });
         mStringList = new ArrayList<>();
-        mAdapter = new CustomGalleryAdapter(getActivity(), mStringList);
+        mAdapter = new CustomGalleryAdapter(this, mStringList);
+        mAdapter.setOnRecyclerItemClickListener(this);
         mRecyclerView.addItemDecoration(new CGItemDecoration());
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(mAdapter);
-        sms = new SingleMediaScanner(getActivity(), new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "DCIM" + File.separator + "Camera" + File.separator));
+        sms = new SingleMediaScanner(this, new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "DCIM" + File.separator + "Camera" + File.separator));
         titleTV.setText("最近照片");
         new SelectImageTask().execute(new SGFolder("0", "最近照片"));
     }
@@ -75,7 +73,7 @@ public class BitmapListFragment extends Fragment implements FolderPopWindow.OnIt
      */
     private void showPop() {
         if (mFolderPopWindow == null) {
-            mFolderPopWindow = new FolderPopWindow(getActivity(), this);
+            mFolderPopWindow = new FolderPopWindow(this, this);
             new SelectFolderTask().execute();
         }
         if (mFolderPopWindow.isShowing()) {
@@ -106,8 +104,24 @@ public class BitmapListFragment extends Fragment implements FolderPopWindow.OnIt
 
     @Override
     public void onRecyclerItemClick(int position) {
-        mSuperGalleryActivity.startClipBitmapFragment(mStringList.get(position));
+        Intent intent = new Intent(this, ClipBitmapActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("img", mStringList.get(position));
+        intent.putExtra("bundle", bundle);
+        startActivityForResult(intent, 0);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 0 && resultCode == RESULT_OK) {
+            if (!TextUtils.isEmpty(data.getStringExtra("clipimg"))) {
+                setResult(RESULT_OK, data);
+                finish();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
 
     /**
      * 遍历图片文件夹
@@ -133,7 +147,7 @@ public class BitmapListFragment extends Fragment implements FolderPopWindow.OnIt
             sgFolder.setId("0");
             sgFolder.setName("最近照片");
             folderList.add(sgFolder);
-            cursor = getActivity().getContentResolver().query(imgUri, folderProjection, selection, imgSelectionArgs, MediaStore.Images.Media.DEFAULT_SORT_ORDER);
+            cursor = getContentResolver().query(imgUri, folderProjection, selection, imgSelectionArgs, MediaStore.Images.Media.DEFAULT_SORT_ORDER);
             if (cursor != null) {
                 sgFolder = null;
                 while (cursor.moveToNext()) {
@@ -185,14 +199,14 @@ public class BitmapListFragment extends Fragment implements FolderPopWindow.OnIt
                 String imgSelectionArgs[] = {
                         "image/jpeg", "image/png"
                 };
-                cursor = getActivity().getContentResolver().query(imgUri, imgProjection, imgSelection, imgSelectionArgs, sort);
+                cursor = getContentResolver().query(imgUri, imgProjection, imgSelection, imgSelectionArgs, sort);
             } else {
                 String sort = MediaStore.Images.ImageColumns.DATE_ADDED + " DESC";
                 String imgSelection = "(" + MediaStore.Images.Media.MIME_TYPE + "=? OR +" + MediaStore.Images.Media.MIME_TYPE + " =?)" + "AND " + MediaStore.Images.Media.BUCKET_ID + "=?";
                 String imgSelectionArgs[] = {
                         "image/jpeg", "image/png", sgFolder.getId()
                 };
-                cursor = getActivity().getContentResolver().query(imgUri, imgProjection, imgSelection, imgSelectionArgs, sort);
+                cursor = getContentResolver().query(imgUri, imgProjection, imgSelection, imgSelectionArgs, sort);
             }
             ArrayList<CGImage> cgImageList = new ArrayList<>();
             cgImageList.add(new CGImage());

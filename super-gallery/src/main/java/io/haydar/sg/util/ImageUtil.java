@@ -38,6 +38,7 @@ public class ImageUtil {
     private static final int MAX_POOL_SIZE = CPU_COUNT * 4 + 1;
     private static final long KEEP_ALIVE = 30;
     private DiskLruCache mDiskLruCache;
+    int targetDensity;
     private static final Executor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
@@ -61,6 +62,7 @@ public class ImageUtil {
      */
 
     private ImageUtil(Context mContext) {
+        targetDensity = mContext.getResources().getDisplayMetrics().densityDpi;
         //初始化lrucache缓存
         mBitmapLruCache = new LruCache<String, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 8)) {
             @Override
@@ -119,6 +121,9 @@ public class ImageUtil {
                                 int sampleSize = Math.min(cgImage.getWidth(), cgImage.getHeight()) / mImageView.myWidth;
                                 BitmapFactory.Options mOptions = new BitmapFactory.Options();
                                 mOptions.inSampleSize = sampleSize;
+                                mOptions.inScaled = true;
+                                mOptions.inDensity = (int) (targetDensity * sampleSize);
+                                mOptions.inTargetDensity = targetDensity;
                                 bitmap = BitmapFactory.decodeFile(cgImage.getThumbnails(), mOptions);
                             } else {
                                 bitmap = BitmapFactory.decodeFile(cgImage.getThumbnails());
