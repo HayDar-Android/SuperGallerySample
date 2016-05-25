@@ -17,7 +17,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import io.haydar.sg.R;
@@ -37,6 +40,8 @@ public class BitmapListActivity extends AppCompatActivity implements FolderPopWi
     private SingleMediaScanner sms;
     private List<SGFolder> mFolderList;
     private FolderPopWindow mFolderPopWindow;
+    private final int CAMERA = 11;
+    private final int CLIP = 22;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -102,22 +107,81 @@ public class BitmapListActivity extends AppCompatActivity implements FolderPopWi
         new SelectImageTask().execute(mFolderList.get(position));
     }
 
+    /**
+     * 跳转到裁剪页面
+     *
+     * @param position
+     */
     @Override
     public void onRecyclerItemClick(int position) {
         Intent intent = new Intent(this, ClipBitmapActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("img", mStringList.get(position));
         intent.putExtra("bundle", bundle);
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, CLIP);
+    }
+
+    /**
+     * 调用相机拍照
+     */
+    @Override
+    public void onCameraItemClick() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            if (photoFile != null) {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        Uri.fromFile(photoFile));
+            }
+            startActivityForResult(intent, CAMERA);
+        }
+    }
+
+    String mCurrentPhotoPath;
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath =  image.getAbsolutePath();
+        return image;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 0 && resultCode == RESULT_OK) {
+        if (requestCode == CLIP && resultCode == RESULT_OK) {
             if (!TextUtils.isEmpty(data.getStringExtra("clipimg"))) {
                 setResult(RESULT_OK, data);
                 finish();
             }
+        } else if (requestCode == CAMERA && resultCode == RESULT_OK) {
+            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            File f = new File(mCurrentPhotoPath);
+            Uri contentUri = Uri.fromFile(f);
+            mediaScanIntent.setData(contentUri);
+            this.sendBroadcast(mediaScanIntent);
+
+            CGImage cgImage = new CGImage();
+            cgImage.setPath(mCurrentPhotoPath);
+            Intent intent = new Intent(this, ClipBitmapActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("img", cgImage);
+            intent.putExtra("bundle", bundle);
+            startActivityForResult(intent, CLIP);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

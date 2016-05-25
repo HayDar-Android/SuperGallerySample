@@ -7,8 +7,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.LruCache;
 
-import com.orhanobut.logger.Logger;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -136,7 +134,6 @@ public class ImageUtil {
                             mHandler.obtainMessage(1, result).sendToTarget();
                         }
                     } catch (Exception e) {
-                        Logger.d(cgImage.getThumbnails());
                     }
                 }
             };

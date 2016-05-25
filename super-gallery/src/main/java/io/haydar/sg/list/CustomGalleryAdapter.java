@@ -51,6 +51,14 @@ public class CustomGalleryAdapter extends RecyclerView.Adapter<CustomGalleryAdap
         if (position == 0) {
             holder.mImageView.setScaleType(ImageView.ScaleType.CENTER);
             holder.mImageView.setImageResource(android.R.drawable.ic_menu_camera);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mOnRecyclerItemClickListener != null) {
+                        mOnRecyclerItemClickListener.onCameraItemClick();
+                    }
+                }
+            });
             return;
         }
         if (holder.mImageView.getScaleType() != ImageView.ScaleType.CENTER_CROP) {
@@ -111,5 +119,7 @@ public class CustomGalleryAdapter extends RecyclerView.Adapter<CustomGalleryAdap
 
     interface OnRecyclerItemClickListener {
         void onRecyclerItemClick(int position);
+
+        void onCameraItemClick();
     }
 }

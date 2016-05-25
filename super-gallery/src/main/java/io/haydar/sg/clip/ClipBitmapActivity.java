@@ -104,6 +104,13 @@ public class ClipBitmapActivity extends AppCompatActivity implements ClipBitmapL
             path = mCgImage.getPath();
             int targetDensity = getResources().getDisplayMetrics().densityDpi;
             BitmapFactory.Options mOptions = new BitmapFactory.Options();
+            if (mCgImage.getWidth() == 0 || mCgImage.getHeight() == 0) {
+                mOptions.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(mCgImage.getPath(), mOptions);
+                mCgImage.setWidth(mOptions.outWidth);
+                mCgImage.setHeight(mOptions.outHeight);
+                mOptions.inJustDecodeBounds = false;
+            }
             mOptions.inSampleSize = calculateInSampleSize(mCgImage, width, height);
             double xSScale = ((double) mCgImage.getWidth()) / ((double) width);
             double ySScale = ((double) mCgImage.getHeight()) / ((double) height);
